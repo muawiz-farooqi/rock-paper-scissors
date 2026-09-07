@@ -1,4 +1,4 @@
-// where is round is played and decided. should return the winner or the updated scores
+// where a round is played and decided. should return the winner or the updated scores
 function playRound()
 {
 
