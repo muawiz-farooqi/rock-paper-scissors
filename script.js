@@ -1,8 +1,7 @@
 // constant choices array with the 3 options for computer to pick during rounds
 const choices = ["rock", "paper", "scissors"];
 
-// Explain console usage to the player up front
-setTimeout(() => {
+// Explain console usage to the player up front. Requirement 1
   alert(
     "Welcome! This game uses browser alerts and the Developer Console for logs.\n\n" +
     "To open the console:\n" +
@@ -10,22 +9,29 @@ setTimeout(() => {
     "• Mac: Press Cmd + Option + J\n\n" +
     "Click OK to start!"
   );
-}, 5000);// 5 seconds delay.
-function getWinner(computerChoice, playerChoice) {
+
+// computerPlay function returns random move. Requirement 2
+function computerPlay(){
+    let compSelIndex = Math.floor(Math.random() * 3);
+    return choices[compSelIndex];
+}  
+
+// p
+function playRound(playerSelection, computerSelection) {
     // make sure both options are in lowercase to account for any capitalized characters in the entry
-    playerChoice = playerChoice.toLowerCase();
-    computerChoice = computerChoice.toLowerCase();
+    playerSelection = playerSelection.toLowerCase();
+    computerSelection = computerSelection.toLowerCase();
 
     // if they had the same cohise: its a draw
-    if (computerChoice === playerChoice) {
+    if (computerSelection === playerSelection) {
         return "draw";
     }
 
     // if any combination that results in a player win:
     if (
-        (playerChoice === "rock" && computerChoice === "scissors") ||
-        (playerChoice === "paper" && computerChoice === "rock") ||
-        (playerChoice === "scissors" && computerChoice === "paper")
+        (playerSelection === "rock" && computerSelection === "scissors") ||
+        (playerSelection === "paper" && computerSelection === "rock") ||
+        (playerSelection === "scissors" && computerSelection === "paper")
     ) {
         // return the winner is player
         return "player";
@@ -36,53 +42,25 @@ function getWinner(computerChoice, playerChoice) {
 }
 
 // where a round is played and decided. should return the winner or the updated scores
-function playRound() {
-    console.log("in round"); // DEBUG message (delete afterwards)
+function getPlayerSelection() {
+    while (true) {
+        let input = prompt("enter your choice (rock / paper / scissors)");
 
-    // the default is that the selection is valid
-    let invalidSelection = false;
-
-    let playerSelection = "";
-
-    // post-condition loop
-    do {
-        // ask the player using prompt to enter their choice. store the choice in the playerSelection variable
-        playerSelection = prompt(
-            "enter your choice (rock / paper / scissors)",
-        );
-
-        // if valid choice entered
-        if (choices.includes(playerSelection.toLowerCase())) {
-            // valid
-            invalidSelection = false;
-            // debug (delete)
-            console.log(`player picked ${playerSelection.toLowerCase()}`);
-        } else {
-            // invalid
-            invalidSelection = true;
-            // debug (delete)
-            console.log(`player picked ${playerSelection.toLowerCase()}`);
-            alert("not a valid choice. try again");
+        //Graceful exit if Cancel is pressed
+        if (input === null){
+            return null;
         }
-    
-    // will keep looping if invalid choice is entered
-    } while (invalidSelection);
 
-    // Math.floor(Math.random() * 3) generates a random number between 0 and 2
-    // this is the array index (0, 1, 2) that will pick a cohice from the choices array
-    let compSelIndex = Math.floor(Math.random() * 3);
+        //Clean input: trim surrounding space and convert to lowercase
+        let cleanedInput = input.trim().toLowerCase();
 
-    // pick the Xth option in the array. this is the random choice by the computer
-    let computerSelection = choices[compSelIndex];
+        //Check if input matches an item in choices
+        if (choices.includes(cleanedInput)){
+            return cleanedInput;
+        }
 
-    // write a message to the console about the computer's choice
-    console.log(`computer picked ${computerSelection}`);
-
-    // get the winner of the two options using the return of the getWinner function
-    let winner = getWinner(computerSelection, playerSelection);
-
-    // retunr the winnner
-    return winner;
+        alert("Not a valid choice. Try again.");
+    }
 }
 
 // where the game is played
@@ -92,41 +70,58 @@ function game() {
     let computerScore = 0;
     let playerScore = 0;
 
+    console.log("STARTING ROCK, PAPER, SCISSORS");
+
     // while each player did not reach 3 points
     while (computerScore < 3 && playerScore < 3) {
         // run the playRound function and get and store the winner's name
-        winner = playRound();
+        let playerSelection = getPlayerSelection();
+
+        // End game immediately if Cancel is clicked
+        if (playerSelection === null){
+            console.log(`Game over: Cancelled by user.`);
+            alert("Game cancelled. Thanks for playing!");
+            return;
+        }
+
+        let computerSelection = computerPlay();
+
+        console.log(`Player picked: ${playerSelection}`);
+        console.log(`Computer picked: ${computerSelection}`);
+
+        let winner = playRound(playerSelection, computerSelection);
 
         // if computer won
-        if (winner == "computer") {
+        if (winner === "computer") {
             // increase the computer's score by one
             computerScore++;
             // send an alert message that computer won, also display updated scores
-            alert(
-                `Computer WON!\n\nScores:\nPlayer: ${playerScore}\nComputer: ${computerScore}`,
-            );
+            console.log(`END OF ROUND: COMPUTER WON THIS ROUND! (${computerSelection} beats ${playerSelection})`)
+            alert(`Computer WON!\n\nScores:\nPlayer: ${playerScore}\nComputer: ${computerScore}`);
 
             // if player won
-        } else if (winner == "player") {
+        } else if (winner === "player") {
             // increase the player's score by one
             playerScore++;
             // send an alert message that player won, also display updated scores
-            alert(
-                `player WON!\n\nScores:\nPlayer: ${playerScore}\nComputer: ${computerScore}`,
-            );
+            console.log(`END OF ROUND: PLAYER WON THIS ROUND! (${playerSelection} beats ${computerSelection})`)
+            alert(`player WON!\n\nScores:\nPlayer: ${playerScore}\nComputer: ${computerScore}`);
 
             // if it was a draw
         } else {
             // send alert that it was a draw
+            console.log(`END OF ROUND: DRAW (NO POINTS FOR PLAYER OR COMPUTER)`);
             alert("DRAW!\nPlay Again");
         }
     }
 
     // if player got 3 points (won the game)
-    if (playerScore == 3) {
+    if (playerScore === 3) {
+        console.log(`END OF GAME: PLAYER WINS!`);
         alert("game over. You WIN!");
         // if computer won with 3 points
     } else {
+        console.log(`END OF GAME: COMPUTER WINS!`);
         alert("game over. Computer WINss!");
     }
 }
