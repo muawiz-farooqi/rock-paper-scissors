@@ -1,14 +1,15 @@
 const choices = ["rock", "paper", "scissors"];
 
 // Explain console usage to the player up front
-alert(
-  "Welcome! This game uses browser alerts and the Developer Console for logs.\n\n" +
-  "To open the console:\n" +
-  "• Windows/Linux: Press F12 or Ctrl + Shift + J\n" +
-  "• Mac: Press Cmd + Option + J\n\n" +
-  "Click OK to start!"
-);
-
+setTimeout(() => {
+  alert(
+    "Welcome! This game uses browser alerts and the Developer Console for logs.\n\n" +
+    "To open the console:\n" +
+    "• Windows/Linux: Press F12 or Ctrl + Shift + J\n" +
+    "• Mac: Press Cmd + Option + J\n\n" +
+    "Click OK to start!"
+  );
+}, 5000);// 5 seconds delay.
 function getWinner(computerChoice, playerChoice) {
     playerChoice = playerChoice.toLowerCase();
     computerChoice = computerChoice.toLowerCase();
