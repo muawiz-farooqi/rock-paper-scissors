@@ -1,4 +1,4 @@
-// where a round is played and decided. should return the winner or the updated scores]
+// where the computer randomly chooses rock, paper or scissors
 
 function computerPlay() {
     const randomNumber = Math.floor(Math.random() * 3);
@@ -35,6 +35,7 @@ function getPlayerChoice() {
 
     }
 }
+// where a round is played and decided. returns the result of the round
 
 function playRound(playerSelection, computerSelection) {
     if (playerSelection === computerSelection) {
@@ -87,11 +88,36 @@ function game() {
 
     if (playerScore === 3) {
         console.log("You won the game!");
+        alert(`You won the game! Final score: Player ${playerScore} - Computer ${computerScore}`);
     } else {
         console.log("Computer won the game!");
+        alert(`Computer won the game! Final score: Computer ${computerScore} - Player ${playerScore}`);
     }
 }
 
 // where the game starts. also handles cancel or restart
 
-game();
+function startGame() {
+    alert(
+        "ROCK, PAPER OR SCISSORS!\n\n" +
+        "The first player to win 3 rounds wins the game.\n" +
+        "Choose Rock, Paper or Scissors when prompted.\n\n" +
+        "The browser console is required to follow the game results and score.\n" +
+        "Chrome/Edge: Press F12 or Ctrl + Shift + J on Windows/Linux, or Command + Option + J on macOS.\n\n" +
+        "Press Cancel at any time to end the game."
+    );
+
+    let playAgain = true;
+
+    while (playAgain) {
+        const gameResult = game();
+
+        if (gameResult === null) {
+            return;
+        }
+
+        playAgain = confirm("Would you like to play again?");
+    }
+}
+
+startGame();
