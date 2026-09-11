@@ -8,11 +8,11 @@ alert(
 );
 
 // constant choices array with the 3 options for computer to pick during rounds
-const choices = ["rock", "paper", "scissors"];
+const choices = ["Rock", "Paper", "Scissors"];
 
 // ascii art for choices
 const art = {
-    rock: `
+    Rock: `
     _______
 ---'   ____)
       (_____)
@@ -21,7 +21,7 @@ const art = {
 ---.__(___)
 `,
 
-    paper: `
+    Paper: `
      _______
 ---'    ____)____
            ______)
@@ -30,7 +30,7 @@ const art = {
 ---.__________)
 `,
 
-    scissors: `
+    Scissors: `
     _______
 ---'   ____)____
           ______)
@@ -49,6 +49,7 @@ window.playAgain = game;
 // where the game is played
 function game() {
     let playing = true;
+    let roundCounter = 0;
 
     while (playing) {
         // variables to store scores
@@ -59,6 +60,8 @@ function game() {
 
         // while each player did not reach 3 points
         while (computerRoundScore < 3 && playerRoundScore < 3) {
+            console.log(`======== ROUND ${++roundCounter} ========`);
+
             // run the playRound function and get and store the winner's name
             let playerSelection = getPlayerSelection();
 
@@ -124,9 +127,7 @@ function game() {
                 `END OF GAME: You WIN! (${playerRoundScore} - ${computerRoundScore})`,
             );
 
-            alert(
-                "Game over! You Win!",
-            );
+            alert("Game over! You Win!");
 
             // if computer won with 3 points
         } else {
@@ -134,11 +135,10 @@ function game() {
                 `END OF GAME: COMPUTER WINS! (${playerRoundScore} - ${computerRoundScore})`,
             );
 
-            alert(
-                "Game over! Computer Wins!",
-            );
+            alert("Game over! Computer Wins!");
         }
 
+        roundCounter = 0;
         playing = confirm("Do you want to play again?");
     }
 
@@ -148,15 +148,15 @@ function game() {
 // gets the player's choice and returns it
 function getPlayerSelection() {
     while (true) {
-        let input = prompt("enter your choice (rock / paper / scissors)");
+        let input = prompt("Enter your choice (Rock / Paper / Scissors)");
 
         //Graceful exit if Cancel is pressed
         if (input === null) {
             return null;
         }
 
-        //Clean input: trim surrounding space and convert to lowercase
-        let cleanedInput = input.trim().toLowerCase();
+        //Clean input: trim surrounding space and convert to correct case
+        let cleanedInput = capitalizeAndTrim(input);
 
         //Check if input matches an item in choices
         if (choices.includes(cleanedInput)) {
@@ -182,9 +182,9 @@ function playRound(playerSelection, computerSelection) {
 
     // if any combination that results in a player win:
     if (
-        (playerSelection === "rock" && computerSelection === "scissors") ||
-        (playerSelection === "paper" && computerSelection === "rock") ||
-        (playerSelection === "scissors" && computerSelection === "paper")
+        (playerSelection === "Rock" && computerSelection === "Scissors") ||
+        (playerSelection === "Paper" && computerSelection === "Rock") ||
+        (playerSelection === "Scissors" && computerSelection === "Paper")
     ) {
         // return the winner is player
         return "player";
@@ -193,3 +193,9 @@ function playRound(playerSelection, computerSelection) {
     // if its neither a draw, nor a player win, it must be a computer win
     return "computer";
 }
+
+const capitalizeAndTrim = (word) => {
+    if (!word) return "";
+    const cleaned = word.trim();
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+};
