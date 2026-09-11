@@ -42,100 +42,107 @@ const art = {
 
 console.log('Type "startGame()" to begin!');
 
-// Let the player restart from the console without refreshing
+// Let the player start/restart from the console without refreshing
 window.startGame = game;
 window.playAgain = game;
 
 // where the game is played
 function game() {
+    let playing = true;
 
-    // variables to store scores
-    let computerRoundScore = 0;
-    let playerRoundScore = 0;
+    while (playing) {
+        // variables to store scores
+        let computerRoundScore = 0;
+        let playerRoundScore = 0;
 
-    console.log("STARTING ROCK, PAPER, SCISSORS");
+        console.log("STARTING ROCK, PAPER, SCISSORS");
 
-    // while each player did not reach 3 points
-    while (computerRoundScore < 3 && playerRoundScore < 3) {
+        // while each player did not reach 3 points
+        while (computerRoundScore < 3 && playerRoundScore < 3) {
+            // run the playRound function and get and store the winner's name
+            let playerSelection = getPlayerSelection();
 
-        // run the playRound function and get and store the winner's name
-        let playerSelection = getPlayerSelection();
+            // End game immediately if Cancel is clicked
+            if (playerSelection === null) {
+                console.log("Game over: Cancelled by user");
+                alert("Game cancelled. Thanks for playing!");
+                return "Type playAgain() in the console to start a new game";
+            }
 
-        // End game immediately if Cancel is clicked
-        if (playerSelection === null) {
+            let computerSelection = computerPlay();
 
-            console.log('Game over: Cancelled by user.\n\n');
-            alert("Game cancelled. Thanks for playing!");
-            return "Type playAgain() in the console to start a new game.";
+            console.log(
+                `Player picked: ${playerSelection}\n${art[playerSelection]}`,
+            );
+            console.log(
+                `Computer picked: ${computerSelection}\n${art[computerSelection]}`,
+            );
+
+            let winner = playRound(playerSelection, computerSelection);
+
+            // if computer won
+            if (winner === "computer") {
+                // increase the computer's score by one
+                computerRoundScore++;
+
+                // send an alert message that computer won, also display updated scores
+                console.log(
+                    `COMPUTER WINS THIS ROUND! (${playerRoundScore} - ${computerRoundScore})`,
+                );
+
+                alert(
+                    `Computer WON!\n\nScores:\nPlayer: ${playerRoundScore}\nComputer: ${computerRoundScore}`,
+                );
+
+                // if player won
+            } else if (winner === "player") {
+                // increase the player's score by one
+                playerRoundScore++;
+
+                // send an alert message that player won, also display updated scores
+                console.log(
+                    `YOU WIN THIS ROUND! (${playerRoundScore} - ${computerRoundScore})`,
+                );
+
+                alert(
+                    `You beat the computer!\n\nScores:\nPlayer: ${playerRoundScore}\nComputer: ${computerRoundScore}`,
+                );
+
+                // if it was a draw
+            } else {
+                // send alert that it was a draw
+                console.log(
+                    `DRAW (${playerRoundScore} - ${computerRoundScore})`,
+                );
+                alert("DRAW!");
+            }
         }
 
-        let computerSelection = computerPlay();
-
-        console.log(`Player picked: ${playerSelection}\n${art[playerSelection]}`);
-        console.log(`Computer picked: ${computerSelection}\n${art[computerSelection]}`);
-
-        let winner = playRound(playerSelection, computerSelection);
-
-        // if computer won
-        if (winner === "computer") {
-
-            // increase the computer's score by one
-            computerRoundScore++;
-
-            // send an alert message that computer won, also display updated scores
+        // if player got 3 points (won the game)
+        if (playerRoundScore === 3) {
             console.log(
-                `COMPUTER WINS THIS ROUND! (${computerRoundScore} - ${playerRoundScore})`,
+                `END OF GAME: You WIN! (${playerRoundScore} - ${computerRoundScore})`,
             );
 
             alert(
-                `Computer WON!\n\nScores:\nPlayer: ${playerRoundScore}\nComputer: ${computerRoundScore}`,
+                "Game over! You Win!",
             );
 
-            // if player won
-        } else if (winner === "player") {
-
-            // increase the player's score by one
-            playerRoundScore++;
-
-            // send an alert message that player won, also display updated scores
-            console.log(
-                `YOU WIN THIS ROUND! (${playerRoundScore} - ${computerRoundScore})`,
-            );
-
-            alert(
-                `You beat the computer!\n\nScores:\nPlayer: ${playerRoundScore}\nComputer: ${computerRoundScore}`,
-            );
-
-            // if it was a draw
+            // if computer won with 3 points
         } else {
+            console.log(
+                `END OF GAME: COMPUTER WINS! (${playerRoundScore} - ${computerRoundScore})`,
+            );
 
-            // send alert that it was a draw
-            console.log(`DRAW (${playerRoundScore} - ${computerRoundScore})`);
-            alert("DRAW!");
+            alert(
+                "Game over! Computer Wins!",
+            );
         }
+
+        playing = confirm("Do you want to play again?");
     }
 
-    // if player got 3 points (won the game)
-    if (playerRoundScore === 3) {
-        console.log(
-            `END OF GAME: You WIN! (${playerRoundScore} - ${computerRoundScore})`,
-        );
-
-        alert(
-            "Game over! You Win!\n\nType playAgain() in the console anytime to play again",
-        );
-
-        // if computer won with 3 points
-    } else {
-        console.log(
-            `END OF GAME: COMPUTER WINS! (${computerRoundScore} - ${playerRoundScore})`,
-        );
-
-        alert(
-            "Game over! Computer Wins!\n\nType playAgain() in the console anytime to play again",
-        );
-    }
-    return "Type playAgain() in the console to start a new game.";
+    return "Type playAgain() in the console to start a new game";
 }
 
 // gets the player's choice and returns it
@@ -168,7 +175,6 @@ function computerPlay() {
 
 // where a round is played and decided. should return the winner
 function playRound(playerSelection, computerSelection) {
-
     // if they had the same choice: its a draw
     if (computerSelection === playerSelection) {
         return "draw";
