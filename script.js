@@ -1,123 +1,201 @@
-// where the computer randomly chooses rock, paper or scissors
+// Explain console usage to the player up front. Requirement 1
+alert(
+    "Welcome! This game uses browser alerts and the Developer Console for logs.\n\n" +
+        "To open the console:\n" +
+        "• Windows/Linux: Press F12 or Ctrl + Shift + J\n" +
+        "• Mac: Press Cmd + Option + J\n\n" +
+        "Type startGame() in the console and press Enter to begin.",
+);
 
-function computerPlay() {
-    const randomNumber = Math.floor(Math.random() * 3);
+// constant choices array with the 3 options for computer to pick during rounds
+const choices = ["Rock", "Paper", "Scissors"];
 
-    if (randomNumber === 0) {
-        return "rock";
+// ascii art for choices
+const art = {
+    Rock: `
+    _______
+---'   ____)
+      (_____)
+      (_____)
+      (____)
+---.__(___)
+`,
 
-    } else if (randomNumber === 1) {
-        return "paper";
+    Paper: `
+     _______
+---'    ____)____
+           ______)
+          _______)
+         _______)
+---.__________)
+`,
 
-    } else {
-        return "scissors";
-    }
-}
+    Scissors: `
+    _______
+---'   ____)____
+          ______)
+       __________)
+      (____)
+---.__(___)
+`,
+};
 
-function getPlayerChoice() {
-    while (true) {
-        const playerInput = prompt("Choose Rock, Paper or Scissors:");
+console.log('Type "startGame()" to begin!');
 
-        if (playerInput === null) {
-            return null;
-        }
-
-        const choice = playerInput.trim().toLowerCase();
-
-        if (
-            choice === "rock" ||
-            choice === "paper" ||
-            choice === "scissors"
-        ) {
-            return choice;
-        }
-        alert("Invalid choice. Please, choose Rock, Paper or Scissors.")
-
-    }
-}
-// where a round is played and decided. returns the result of the round
-
-function playRound(playerSelection, computerSelection) {
-    if (playerSelection === computerSelection) {
-        return {
-            winner: "Draw",
-            message: `It's a draw! You both chose ${playerSelection}.`
-        };
-    } else if (
-        (playerSelection === "rock" && computerSelection === "scissors") ||
-        (playerSelection === "paper" && computerSelection === "rock") ||
-        (playerSelection === "scissors" && computerSelection === "paper")
-    ) {
-        return {
-            winner: "Player",
-            message: `You win! ${playerSelection} beats ${computerSelection}.`
-        };
-
-    } else {
-        return {
-            winner: "Computer",
-            message: `You lose! ${computerSelection} beats ${playerSelection}.`
-        };
-    }
-}
+// Let the player start/restart from the console without refreshing
+window.startGame = game;
+window.playAgain = game;
 
 // where the game is played
 function game() {
-    let playerScore = 0;
-    let computerScore = 0;
+    let playing = true;
+    let roundCounter = 0;
 
-    while (playerScore < 3 && computerScore < 3) {
-        const playerSelection = getPlayerChoice();
+    while (playing) {
+        // variables to store scores
+        let computerRoundScore = 0;
+        let playerRoundScore = 0;
 
-        if (playerSelection === null) {
+        console.log("STARTING ROCK, PAPER, SCISSORS");
+
+        // while each player did not reach 3 points
+        while (computerRoundScore < 3 && playerRoundScore < 3) {
+            console.log(`======== ROUND ${++roundCounter} ========`);
+
+            // run the playRound function and get and store the winner's name
+            let playerSelection = getPlayerSelection();
+
+            // End game immediately if Cancel is clicked
+            if (playerSelection === null) {
+                console.log("Game over: Cancelled by user");
+                alert("Game cancelled. Thanks for playing!");
+                return "Type playAgain() in the console to start a new game";
+            }
+
+            let computerSelection = computerPlay();
+
+            console.log(
+                `Player picked: ${playerSelection}\n${art[playerSelection]}`,
+            );
+            console.log(
+                `Computer picked: ${computerSelection}\n${art[computerSelection]}`,
+            );
+
+            let winner = playRound(playerSelection, computerSelection);
+
+            // if computer won
+            if (winner === "computer") {
+                // increase the computer's score by one
+                computerRoundScore++;
+
+                // send an alert message that computer won, also display updated scores
+                console.log(
+                    `COMPUTER WINS THIS ROUND! (${playerRoundScore} - ${computerRoundScore})`,
+                );
+
+                alert(
+                    `Computer WON!\n\nScores:\nPlayer: ${playerRoundScore}\nComputer: ${computerRoundScore}`,
+                );
+
+                // if player won
+            } else if (winner === "player") {
+                // increase the player's score by one
+                playerRoundScore++;
+
+                // send an alert message that player won, also display updated scores
+                console.log(
+                    `YOU WIN THIS ROUND! (${playerRoundScore} - ${computerRoundScore})`,
+                );
+
+                alert(
+                    `You beat the computer!\n\nScores:\nPlayer: ${playerRoundScore}\nComputer: ${computerRoundScore}`,
+                );
+
+                // if it was a draw
+            } else {
+                // send alert that it was a draw
+                console.log(
+                    `DRAW (${playerRoundScore} - ${computerRoundScore})`,
+                );
+                alert("DRAW!");
+            }
+        }
+
+        // if player got 3 points (won the game)
+        if (playerRoundScore === 3) {
+            console.log(
+                `END OF GAME: You WIN! (${playerRoundScore} - ${computerRoundScore})`,
+            );
+
+            alert("Game over! You Win!");
+
+            // if computer won with 3 points
+        } else {
+            console.log(
+                `END OF GAME: COMPUTER WINS! (${playerRoundScore} - ${computerRoundScore})`,
+            );
+
+            alert("Game over! Computer Wins!");
+        }
+
+        roundCounter = 0;
+        playing = confirm("Do you want to play again?");
+    }
+
+    return "Type playAgain() in the console to start a new game";
+}
+
+// gets the player's choice and returns it
+function getPlayerSelection() {
+    while (true) {
+        let input = prompt("Enter your choice (Rock / Paper / Scissors)");
+
+        //Graceful exit if Cancel is pressed
+        if (input === null) {
             return null;
         }
 
-        const computerSelection = computerPlay();
-        const result = playRound(playerSelection, computerSelection);
+        //Clean input: trim surrounding space and convert to correct case
+        let cleanedInput = capitalizeAndTrim(input);
 
-        if (result.winner === "Player") {
-            playerScore++;
-        } else if (result.winner === "Computer") {
-            computerScore++;
+        //Check if input matches an item in choices
+        if (choices.includes(cleanedInput)) {
+            return cleanedInput;
         }
 
-        console.log(result.message);
-        console.log(`Score - Player: ${playerScore} | Computer: ${computerScore}`);
-    }
-
-    if (playerScore === 3) {
-        console.log("You won the game!");
-        alert(`You won the game! Final score: Player ${playerScore} - Computer ${computerScore}`);
-    } else {
-        console.log("Computer won the game!");
-        alert(`Computer won the game! Final score: Computer ${computerScore} - Player ${playerScore}`);
+        alert("Not a valid choice. Try again.");
     }
 }
 
-// where the game starts. also handles cancel or restart
-
-function startGame() {
-    alert(
-        "ROCK, PAPER OR SCISSORS!\n\n" +
-        "The first player to win 3 rounds wins the game.\n" +
-        "Choose Rock, Paper or Scissors when prompted.\n\n" +
-        "The browser console is required to follow the game results and score.\n" +
-        "Chrome/Edge: Press F12 or Ctrl + Shift + J on Windows/Linux, or Command + Option + J on macOS.\n\n" +
-        "Press Cancel at any time to end the game."
-    );
-
-    let playAgain = true;
-
-    while (playAgain) {
-        const gameResult = game();
-
-        if (gameResult === null) {
-            return;
-        }
-
-        playAgain = confirm("Would you like to play again?");
-    }
+// computerPlay function returns random move. Requirement 2
+function computerPlay() {
+    let compSelIndex = Math.floor(Math.random() * 3);
+    return choices[compSelIndex];
 }
 
-startGame();
+// where a round is played and decided. should return the winner
+function playRound(playerSelection, computerSelection) {
+    // if they had the same choice: its a draw
+    if (computerSelection === playerSelection) {
+        return "draw";
+    }
+
+    // if any combination that results in a player win:
+    if (
+        (playerSelection === "Rock" && computerSelection === "Scissors") ||
+        (playerSelection === "Paper" && computerSelection === "Rock") ||
+        (playerSelection === "Scissors" && computerSelection === "Paper")
+    ) {
+        // return the winner is player
+        return "player";
+    }
+
+    // if its neither a draw, nor a player win, it must be a computer win
+    return "computer";
+}
+
+const capitalizeAndTrim = (word) => {
+    if (!word) return "";
+    const cleaned = word.trim();
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+};
